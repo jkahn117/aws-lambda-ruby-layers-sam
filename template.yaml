@@ -1,0 +1,54 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+Transform: 'AWS::Serverless-2016-10-31'
+
+Globals:
+  Function:
+    Runtime: ruby2.7
+    Handler: app.handler
+
+Resources:
+  MakeBuildLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: MakeBuild
+      CompatibleRuntimes:
+        - ruby2.7
+    Metadata:
+      BuildMethod: makefile
+
+  SAMBuildLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: SAMBuild
+      CompatibleRuntimes:
+        - ruby2.7
+    Metadata:
+      BuildMethod: ruby2.7
+
+  SharedMakeBuildLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: MakeLib
+      CompatibleRuntimes:
+        - ruby2.7
+    Metadata:
+      BuildMethod: makefile
+
+  SharedSAMBuildLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: SAMLib
+      CompatibleRuntimes:
+        - ruby2.7
+    Metadata:
+      BuildMethod: ruby2.7
+
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: func/
+      Layers:
+        - !Ref MakeBuildLayer
+        - !Ref SharedSAMBuildLayer
